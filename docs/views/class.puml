@@ -12,7 +12,7 @@
         + price: float
     }
 
-    class ProductStock {
+    class Stock {
         + product_id: int
         + quantity: int
     }
@@ -38,13 +38,13 @@
         + delete_order_from_redis(int) : void
     }
 
-    class WriteProductStock {
+    class WriteStock {
         + check_in_items_to_stock(OrderItem[]) : void
         + check_out_items_from_stock(OrderItem[]) : void
         + update_stock_redis(OrderItem[], String) : void
     }
 
-    class ReadProductStock {
+    class ReadStock {
         + get_stock_by_id(int) : JSONObject
         + get_stock_for_all_products() : JSONArray
     }
@@ -63,7 +63,7 @@
         + get_report_best_selling_products(int) : JSONArray
     }
 
-    class ProductStockController {
+    class StockController {
         + set_stock(RequestBody) : JSONObject
         + get_stock(int) : JSONObject
         + get_stock_overview() : JSONArray
@@ -75,11 +75,11 @@
     WriteOrder --> Order
     WriteOrder --> OrderItem
     WriteOrder --> Product
-    WriteOrder --> WriteProductStock
-    WriteProductStock --> ProductStock
+    WriteOrder --> WriteStock
+    WriteStock --> Stock
     OrderController --> WriteOrder
     OrderController --> ReadOrder
-    ProductStockController --> ReadProductStock
-    ProductStockController --> WriteProductStock
-    ProductStock --> Product
+    StockController --> ReadStock
+    StockController --> WriteStock
+    Stock --> Product
 @enduml

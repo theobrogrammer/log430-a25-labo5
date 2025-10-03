@@ -7,10 +7,10 @@
 	},
 	"item": [
 		{
-			"name": "Product stocks",
+			"name": "Stocks",
 			"item": [
 				{
-					"name": "/product stocks",
+					"name": "/stocks",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -41,39 +41,39 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/stocks/99",
+							"raw": "{{baseURL}}/stocks/1",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"stocks",
-								"99"
+								"1"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "/stocks/reports/overview Copy",
+					"name": "/stocks/reports/overview-stocks",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/stocks/reports/overview",
+							"raw": "{{baseURL}}/stocks/reports/overview-stocks",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"stocks",
 								"reports",
-								"overview"
+								"overview-stocks"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "/stocks/graphql",
+					"name": "/stocks/graphql-query",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -85,13 +85,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseURL}}/stocks/graphql",
+							"raw": "{{baseURL}}/stocks/graphql-query",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"stocks",
-								"graphql"
+								"graphql-query"
 							]
 						}
 					},
@@ -109,7 +109,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"user_id\": 2,\n    \"items\": [{\"product_id\": 1, \"quantity\": 10}]\n}",
+							"raw": "{\n    \"user_id\": 1,\n    \"items\": [{\"product_id\": 1, \"quantity\": 2}]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -134,51 +134,69 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/orders/1",
+							"raw": "{{baseURL}}/orders/3282",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"orders",
-								"1"
+								"3282"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "/orders/reports/highest_spenders",
+					"name": "/orders/:id",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/orders/reports/highest_spenders",
+							"raw": "{{baseURL}}/orders/6",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"orders",
-								"reports",
-								"highest_spenders"
+								"6"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "/orders/reports/best_sellers",
+					"name": "/orders/reports/highest-spenders",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/orders/reports/best_sellers",
+							"raw": "{{baseURL}}/orders/reports/highest-spenders",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"orders",
 								"reports",
-								"best_sellers"
+								"highest-spenders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/orders/reports/best-sellers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/orders/reports/best-sellers",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"orders",
+								"reports",
+								"best-sellers"
 							]
 						}
 					},
@@ -196,7 +214,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Some item\",\n    \"sku\": \"ABCDEF1234\",\n    \"price\": 5.55\n}",
+							"raw": "{\n    \"name\": \"Some item\",\n    \"sku\": \"ABCDEF1236\",\n    \"price\": 5.55\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -228,6 +246,24 @@
 							"path": [
 								"products",
 								"99"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/products/:id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/products/1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"products",
+								"1"
 							]
 						}
 					},
@@ -281,6 +317,24 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "/users/:id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/users/1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -288,17 +342,17 @@
 			"name": "Observability",
 			"item": [
 				{
-					"name": "/health",
+					"name": "/health-check",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/health",
+							"raw": "{{baseURL}}/health-check",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
-								"health"
+								"health-check"
 							]
 						}
 					},
