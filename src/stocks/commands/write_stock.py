@@ -123,9 +123,9 @@ def update_stock_redis(order_items, operation):
         pipeline.execute()
     
     else:
-        _populate_redis_from_mysql(r)
+        populate_redis_from_mysql(r)
 
-def _populate_redis_from_mysql(redis_conn):
+def populate_redis_from_mysql(redis_conn):
     """ Helper function to populate Redis from MySQL stocks table """
     session = get_sqlalchemy_session()
     try:
@@ -134,7 +134,7 @@ def _populate_redis_from_mysql(redis_conn):
         ).fetchall()
 
         if not len(stocks):
-            print("No stocks to populate")
+            print("Il n'est pas nécessaire de synchronisér le stock MySQL avec Redis")
             return
         
         pipeline = redis_conn.pipeline()
@@ -146,10 +146,10 @@ def _populate_redis_from_mysql(redis_conn):
             )
         
         pipeline.execute()
-        print(f"Populated Redis with {len(stocks)} stock records")
+        print(f"{len(stocks)} enregistrements de stock ont été synchronisés avec Redis")
         
     except Exception as e:
-        print(f"Error populating Redis from MySQL: {e}")
+        print(f"Erreur de synchronisation: {e}")
         raise e
     finally:
         session.close()

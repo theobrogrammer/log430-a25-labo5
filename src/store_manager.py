@@ -3,16 +3,22 @@ Order manager application
 SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
+import threading
 from graphene import Schema
 from stocks.schemas.query import Query
 from flask import Flask, request, jsonify
 from orders.controllers.order_controller import create_order, remove_order, get_order, get_report_highest_spending_users, get_report_best_selling_products, update_order
 from orders.controllers.user_controller import create_user, remove_user, get_user
 from stocks.controllers.product_controller import create_product, remove_product, get_product
-from stocks.controllers.stock_controller import get_stock, set_stock, get_stock_overview
+from stocks.controllers.stock_controller import get_stock, populate_redis_on_startup, set_stock, get_stock_overview
 from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
  
 app = Flask(__name__)
+
+# Auto-populate Redis 15s after API startup (to give enough time for the DB to start up as well)
+thread = threading.Timer(15.0, populate_redis_on_startup)
+thread.daemon = True
+thread.start()
 
 counter_orders = Counter('orders', 'Calls to orders')
 counter_highest_spenders = Counter('highest_spenders', 'Calls to highest spenders report')
