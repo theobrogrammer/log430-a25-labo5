@@ -72,3 +72,7 @@ INSERT INTO stocks (product_id, quantity) VALUES
 (2, 500),
 (3, 2),
 (4, 90);
+
+-- Indexes
+CREATE INDEX idx_stocks_product_id ON stocks (product_id);
+CREATE INDEX idx_order_items_product_id ON order_items (product_id);
