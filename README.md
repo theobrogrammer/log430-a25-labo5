@@ -79,7 +79,7 @@ Dans `orders/commands/write_order.py`, la fonction `add_order` effectue la créa
 > 💡 **Question 3** : Quel résultat obtenons-nous de la requête à `POST payments/process/:id`?
 
 ### 3. Ajoutez un nouveau endpoint à KrakenD
-Ajoutez l'endpoint de création de commandes à `config/krakend.json`. Nous l'utiliserons lors des prochaines activités. 
+Ajoutez l'endpoint de création de commandes à `config/krakend.json`. Nous l'utiliserons lors des prochaines activités. Ce code ajoute une [limitation du nombre de requêtes](https://www.krakend.io/docs/endpoints/rate-limit/) à nos endpoints (10 requêtes par minute, par client).
 ```json
   {
       "endpoint": "/store-api/orders",
@@ -93,7 +93,7 @@ Ajoutez l'endpoint de création de commandes à `config/krakend.json`. Nous l'ut
       "extra_config": {
         "qos/ratelimit/router": {
           "max_rate": 10,
-          "capacity": 10
+          "every": "1m",
         }
       }
   },
