@@ -17,8 +17,8 @@ Dans ce labo, nous allons ajouter des fonctionnalités de paiement à notre appl
 ### 1. Clonez les dépôts
 Créez vos propres dépôts à partir des dépôts gabarits (templates). Vous pouvez modifier la visibilité pour les rendre privés si vous voulez.
 ```bash
-git clone https://github.com/guteacher/log430-a25-labo5
-git clone https://github.com/guteacher/log430-a25-labo5-paiement
+git clone https://github.com/[votrenom]/log430-a25-labo5
+git clone https://github.com/[votrenom]/log430-a25-labo5-paiement
 cd log430-a25-labo5
 ```
 Ensuite, clonez votre dépôt sur votre ordinateur et sur votre serveur de déploiement (ex. VM). Veillez à ne pas cloner le dépôt d'origine.
