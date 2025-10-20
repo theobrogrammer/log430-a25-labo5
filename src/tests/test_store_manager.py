@@ -5,6 +5,7 @@ Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
 
 import json
+from logger import Logger
 import pytest
 from store_manager import app
 
@@ -21,6 +22,7 @@ def test_health(client):
 
 def test_stock_flow(client):
     """Smoke test for complete stock management flow"""
+    logger = Logger.get_instance("test")
     
     # 1. Create a product (POST /products)
     product_data = {
@@ -35,7 +37,7 @@ def test_stock_flow(client):
     assert response.status_code == 201, f"Failed to create product: {response.get_json()}"
     product_id = response.get_json()['product_id']
     assert product_id > 0
-    print(f"Created product with ID: {product_id}")
+    logger.debug(f"Created product with ID: {product_id}")
     
     # 2. Add 5 units to stock (POST /stocks)
     stock_data = {
@@ -47,7 +49,7 @@ def test_stock_flow(client):
                           content_type='application/json')
     
     assert response.status_code == 201, f"Failed to set stock: {response.get_json()}"
-    print(f"Set stock to 5 units for product {product_id}")
+    logger.debug(f"Set stock to 5 units for product {product_id}")
     
     # 3. Verify stock - should have 5 units (GET /stocks/:id)
     response = client.get(f'/stocks/{product_id}')
@@ -55,7 +57,7 @@ def test_stock_flow(client):
     stock_data = response.get_json()
     assert stock_data['product_id'] == product_id
     assert stock_data['quantity'] == 5
-    print(f"Stock verified: {stock_data['quantity']} units")
+    logger.debug(f"Stock verified: {stock_data['quantity']} units")
     
     # Create a user for the order
     user_data = {'name': 'Test User', 'email': 'test@example.com'}
@@ -64,7 +66,7 @@ def test_stock_flow(client):
                           content_type='application/json')
     assert response.status_code == 201, f"Failed to create user: {response.get_json()}"
     user_id = response.get_json()['user_id']
-    print(f"Created user with ID: {user_id}")
+    logger.debug(f"Created user with ID: {user_id}")
     
     # 4. Create an order with 2 units (POST /orders)
     order_data = {
@@ -83,7 +85,7 @@ def test_stock_flow(client):
     assert response.status_code == 201, f"Failed to create order: {response.get_json()}"
     order_id = response.get_json()['order_id']
     assert order_id > 0
-    print(f"Created order with ID: {order_id}")
+    logger.debug(f"Created order with ID: {order_id}")
     
     # 5. Verify stock again - should have 3 units (5 - 2) (GET /stocks/:id)
     response = client.get(f'/stocks/{product_id}')
@@ -91,4 +93,4 @@ def test_stock_flow(client):
     stock_data = response.get_json()
     assert stock_data['product_id'] == product_id
     assert stock_data['quantity'] == 3, f"Expected 3 units, got {stock_data['quantity']}"
-    print(f"Stock after order: {stock_data['quantity']} units")
+    logger.debug(f"Stock after order: {stock_data['quantity']} units")

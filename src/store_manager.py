@@ -15,8 +15,8 @@ from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
  
 app = Flask(__name__)
 
-# Auto-populate Redis 15s after API startup (to give enough time for the DB to start up as well)
-thread = threading.Timer(15.0, populate_redis_on_startup)
+# Auto-populate Redis 5s after API startup (to give enough time for the DB to start up as well)
+thread = threading.Timer(10.0, populate_redis_on_startup)
 thread.daemon = True
 thread.start()
 

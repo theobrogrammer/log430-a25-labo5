@@ -4,6 +4,7 @@ SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
 import json
+from logger import Logger
 import requests
 from flask import request
 from orders.models.order import Order
@@ -12,6 +13,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from orders.models.order_item import OrderItem
 from stocks.commands.write_stock import check_in_items_to_stock, check_out_items_from_stock, update_stock_redis
 from db import get_sqlalchemy_session, get_redis_conn
+
+logger = Logger.get_instance("add_order")
 
 def add_order(user_id: int, items: list):
     """Insert order with items in MySQL, keep Redis in sync"""
@@ -22,6 +25,7 @@ def add_order(user_id: int, items: list):
     session = get_sqlalchemy_session()
 
     try:
+        logger.debug("Commencer : ajout de commande")
         products_query = session.query(Product).filter(Product.id.in_(product_ids)).all()
         price_map = {product.id: product.price for product in products_query}
         total_amount = 0
@@ -65,6 +69,7 @@ def add_order(user_id: int, items: list):
         check_out_items_from_stock(session, order_items)
 
         session.commit()
+        logger.debug("Une commande a été ajouté")
 
         # Insert order into Redis
         update_stock_redis(order_items, '-')

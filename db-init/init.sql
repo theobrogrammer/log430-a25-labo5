@@ -1,6 +1,6 @@
 -- Create database 
-CREATE DATABASE IF NOT EXISTS labo04_db;
-USE labo04_db;
+CREATE DATABASE IF NOT EXISTS labo05_db;
+USE labo05_db;
 
 -- Users table
 DROP TABLE IF EXISTS users;

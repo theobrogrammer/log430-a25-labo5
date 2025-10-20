@@ -3,10 +3,14 @@ Product stocks (write-only model)
 SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
+from logger import Logger
 from sqlalchemy import text
 from stocks.models.product import Product
 from stocks.models.stock import Stock
 from db import get_redis_conn, get_sqlalchemy_session
+
+# Si vous souhaitez en savoir plus sur le processus de logging, rendez-vous dans src/logger.py
+logger = Logger.get_instance("store_manager")
 
 def set_stock_for_product(product_id, quantity):
     """Set stock quantity for product in MySQL"""
@@ -134,7 +138,7 @@ def populate_redis_from_mysql(redis_conn):
         ).fetchall()
         stocks_in_redis = redis_conn.keys(f"stock:*")
         if not len(stocks_in_mysql) or len(stocks_in_redis) > 0:
-            print("Il n'est pas nécessaire de synchronisér le stock MySQL avec Redis")
+            logger.debug("Il n'est pas nécessaire de synchronisér le stock MySQL avec Redis")
             return
         
         pipeline = redis_conn.pipeline()
@@ -146,10 +150,10 @@ def populate_redis_from_mysql(redis_conn):
             )
         
         pipeline.execute()
-        print(f"{len(stocks_in_mysql)} enregistrements de stock ont été synchronisés avec Redis")
+        logger.debug(f"{len(stocks_in_mysql)} enregistrements de stock ont été synchronisés avec Redis")
         
     except Exception as e:
-        print(f"Erreur de synchronisation: {e}")
+        logger.debug(f"Erreur de synchronisation: {e}")
         raise e
     finally:
         session.close()

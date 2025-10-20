@@ -9,10 +9,6 @@ class FlaskAPIUser(HttpUser):
     # Wait time between requests (1-3 seconds)
     wait_time = between(1, 3)
     
-    def on_start(self):
-        """Called every time a Locust user spawns"""
-        print("Welcome, user!")
-    
     # Proportion 1:1, meaning 1/2 + 1/2
     # This means 50% calls to /highest-spenders, 50% calls to /best-sellers
     @task(1) 

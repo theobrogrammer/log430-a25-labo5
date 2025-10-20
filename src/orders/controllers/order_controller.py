@@ -4,10 +4,13 @@ SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
 
+from logger import Logger
 from flask import jsonify
 from db import get_redis_conn
 from orders.commands.write_order import add_order, delete_order, modify_order
 from orders.queries.read_order import get_order_by_id, get_best_selling_products, get_highest_spending_users
+
+logger = Logger.get_instance("order_controller")
 
 def create_order(request):
     """Create order, use WriteOrder model"""
@@ -25,7 +28,7 @@ def update_order(request):
     payload = request.get_json() or {}
     order_id = payload.get('order_id')
     is_paid = payload.get('is_paid')
-    print(f"Mettre à jour la commande {order_id}, status={is_paid}")
+    logger.debug(f"Mettre à jour la commande {order_id}, status={is_paid}")
 
     try:
         # update MySQL
@@ -38,7 +41,7 @@ def update_order(request):
         r.hset(f"order:{order_id}", mapping=order)
 
         # response
-        print("Statut actuel", status)
+        logger.debug("Statut actuel", status)
         return jsonify({'updated': status}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
