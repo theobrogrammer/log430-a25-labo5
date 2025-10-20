@@ -161,7 +161,7 @@ Lancez le test et observez les réponses HTTP 503 (Service Unavailable).
 
 > 💡 **Question 5** : À partir de combien de requêtes par minute observez-vous les erreurs 503 ? Justifiez avec des captures d'écran de Locust.
 
-### 6. Créez une route de test pour le timeout
+### 6. Créez un endpoint de test pour le timeout
 Dans `store_manager.py`, ajoutez un endpoint de test qui simule une réponse lente :
 
 ```python
