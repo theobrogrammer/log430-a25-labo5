@@ -174,7 +174,7 @@ def test_slow_endpoint(delay_seconds):
     return {"message": f"Response after {delay_seconds} seconds"}, 200
 ```
 
-De plus, ajoutez ce endpoint à `config/krakend.json`. Ensuite, **reconstruisez et redémarrez** le conteneur Docker. 
+De plus, ajoutez cet endpoint à `config/krakend.json`. Ensuite, **reconstruisez et redémarrez** le conteneur Docker. 
 ```json
   {
     "endpoint": "/store-api/test/slow/{delay}",
@@ -190,8 +190,8 @@ De plus, ajoutez ce endpoint à `config/krakend.json`. Ensuite, **reconstruisez 
 ```
 
 Testez différents délais en utilisant votre navigateur :
-- `http://localhost:8080/store-api/test/slow?delay=2` 
-- `http://localhost:8080/store-api/test/slow?delay=10` 
+- `http://localhost:8080/store-api/test/slow/2` 
+- `http://localhost:8080/store-api/test/slow/10` 
 
 > 💡 **Question 5** : Que se passe-t-il dans le navigateur quand vous faites une requête avec un délai supérieur au timeout configuré (5 secondes) ? Quelle est l'importance du timeout dans une architecture de microservices ? Justifiez votre réponse avec des exemples pratiques.
 
