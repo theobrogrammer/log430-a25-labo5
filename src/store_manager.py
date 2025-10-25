@@ -4,6 +4,7 @@ SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
 import threading
+import time
 from graphene import Schema
 from stocks.schemas.query import Query
 from flask import Flask, request, jsonify
@@ -23,6 +24,8 @@ thread.start()
 counter_orders = Counter('orders', 'Calls to orders')
 counter_highest_spenders = Counter('highest_spenders', 'Calls to highest spenders report')
 counter_best_sellers = Counter('best_sellers', 'Calls to best sellers report')
+
+
 
 @app.get('/health-check')
 def health():
@@ -107,6 +110,13 @@ def get_stocks_overview():
     rows = get_stock_overview()
     return jsonify(rows)
 
+
+@app.get('/test/slow/<int:delay_seconds>')
+def test_slow_endpoint(delay_seconds):
+    """Endpoint pour tester les timeouts"""
+    time.sleep(delay_seconds)  # Simule une opération lente
+    return {"message": f"Response after {delay_seconds} seconds"}, 200
+
 # Endpoint that allows suppliers to check stock
 @app.post('/stocks/graphql-query')
 def graphql_supplier():
@@ -118,7 +128,7 @@ def graphql_supplier():
         'errors': [str(e) for e in result.errors] if result.errors else None
     })
 
-# Integration with payment service
+# Integration with  service
 @app.put('/orders')
 def put_orders():
     """Update one or more order fields"""

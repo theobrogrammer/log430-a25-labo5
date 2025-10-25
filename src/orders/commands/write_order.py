@@ -15,6 +15,7 @@ from stocks.commands.write_stock import check_in_items_to_stock, check_out_items
 from db import get_sqlalchemy_session, get_redis_conn
 
 logger = Logger.get_instance("add_order")
+payment_logger = Logger.get_instance("request_payment")
 
 def add_order(user_id: int, items: list):
     """Insert order with items in MySQL, keep Redis in sync"""
@@ -112,12 +113,30 @@ def request_payment_link(order_id, total_amount, user_id):
         "total_amount": total_amount
     }
 
-    # TODO: Requête à POST /payments
-    print("")
-    response_from_payment_service = {}
-
-    if True: # if response.ok
-        print(f"ID paiement: {payment_id}")
+    # Requête à POST /payments via l'API Gateway (KrakenD)
+    try:
+        payment_logger.debug(f"Demande de création de paiement pour la commande {order_id}")
+        
+        response_from_payment_service = requests.post(
+            'http://api-gateway:8080/payments-api/payments',
+            json=payment_transaction,
+            headers={'Content-Type': 'application/json'}
+        )
+        
+        if response_from_payment_service.ok:
+            response_data = response_from_payment_service.json()
+            payment_id = response_data.get('payment_id', 0)
+            payment_logger.debug(f"Paiement créé avec succès - ID paiement: {payment_id}")
+        else:
+            payment_logger.error(
+                f"Erreur lors de la création du paiement pour la commande {order_id}: "
+                f"Status {response_from_payment_service.status_code}"
+            )
+            
+    except requests.exceptions.RequestException as e:
+        payment_logger.error(f"Erreur de connexion au service de paiement: {e}")
+    except Exception as e:
+        payment_logger.error(f"Erreur inattendue lors de l'appel au service de paiement: {e}")
 
     return f"http://api-gateway:8080/payments-api/payments/process/{payment_id}" 
 
