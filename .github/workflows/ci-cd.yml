@@ -172,28 +172,31 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: store-manager
       
       - uses: actions/checkout@v4
         with:
           repository: theobrogrammer/log430-a25-labo5-payment
-          path: ../log430-a25-labo5-payment
+          path: payment-service
 
       - name: Deploy services
         run: |
           docker network create labo05-network 2>/dev/null || true
           
-          cd ../log430-a25-labo5-payment
+          cd payment-service
           docker compose down || true
           docker compose up -d --build
           sleep 15
           
-          cd ../log430-a25-labo5
+          cd ../store-manager
           docker compose down || true
           docker compose up -d --build
           sleep 20
 
       - name: Health checks and smoke tests
         run: |
+          cd store-manager
           timeout 60 bash -c 'until curl -f http://localhost:5000/health-check 2>/dev/null; do sleep 2; done' || true
           timeout 60 bash -c 'until curl -s http://localhost:5009/ 2>/dev/null; do sleep 2; done' || true
           
