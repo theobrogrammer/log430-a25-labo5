@@ -168,7 +168,7 @@ jobs:
   deploy:
     needs: [test-store-manager, test-payment-service, integration-test]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     
     steps:
       - uses: actions/checkout@v4
