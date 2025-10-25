@@ -180,6 +180,29 @@ jobs:
           repository: theobrogrammer/log430-a25-labo5-payment
           path: payment-service
 
+      - name: Create .env files
+        run: |
+          # Payment Service .env
+          cat > payment-service/.env <<'EOF'
+          DB_HOST=mysql_payments
+          DB_PORT=3306
+          DB_NAME=labo05_payments_db
+          DB_USER=labo05
+          DB_PASSWORD=labo05
+          EOF
+          
+          # Store Manager .env
+          cat > store-manager/.env <<'EOF'
+          DB_HOST=mysql
+          DB_PORT=3306
+          DB_NAME=labo05_db
+          DB_USER=labo05
+          DB_PASSWORD=labo05
+          REDIS_HOST=redis
+          REDIS_PORT=6379
+          REDIS_DB=0
+          EOF
+
       - name: Deploy services
         run: |
           docker network create labo05-network 2>/dev/null || true
