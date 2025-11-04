@@ -13,8 +13,22 @@ from orders.controllers.user_controller import create_user, remove_user, get_use
 from stocks.controllers.product_controller import create_product, remove_product, get_product
 from stocks.controllers.stock_controller import get_stock, populate_redis_on_startup, set_stock, get_stock_overview
 from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
- 
+
+# Import tracing configuration
+try:
+    from tracing_config import configure_tracing
+    from opentelemetry import trace
+    TRACING_ENABLED = True
+except ImportError:
+    TRACING_ENABLED = False
+    print("Warning: OpenTelemetry not available. Tracing disabled.")
+
 app = Flask(__name__)
+
+# Configure Jaeger tracing
+if TRACING_ENABLED:
+    tracer = configure_tracing(app, "store-manager")
+    print("✅ Jaeger tracing configured for store-manager")
 
 # Auto-populate Redis 5s after API startup (to give enough time for the DB to start up as well)
 thread = threading.Timer(10.0, populate_redis_on_startup)
@@ -36,8 +50,13 @@ def health():
 @app.post('/orders')
 def post_orders():
     """Create a new order based on information on request body"""
-    counter_orders.inc()
-    return create_order(request)
+    if TRACING_ENABLED:
+        with tracer.start_as_current_span("store-manager-create-order"):
+            counter_orders.inc()
+            return create_order(request)
+    else:
+        counter_orders.inc()
+        return create_order(request)
 
 @app.delete('/orders/<int:order_id>')
 def delete_orders_id(order_id):

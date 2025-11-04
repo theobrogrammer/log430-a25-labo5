@@ -22,9 +22,29 @@ def add_order(user_id: int, items: list):
     if not items:
         raise ValueError("Cannot create order. An order must have 1 or more items.")
 
+    # Import tracing if available
+    try:
+        from opentelemetry import trace
+        tracer = trace.get_tracer(__name__)
+        TRACING_ENABLED = True
+    except ImportError:
+        TRACING_ENABLED = False
+
     product_ids = [item['product_id'] for item in items]
     session = get_sqlalchemy_session()
 
+    if TRACING_ENABLED:
+        with tracer.start_as_current_span("add_order") as span:
+            span.set_attribute("user.id", user_id)
+            span.set_attribute("order.items_count", len(items))
+            span.set_attribute("order.product_ids", str(product_ids))
+            
+            return _add_order_implementation(session, user_id, items, product_ids, span)
+    else:
+        return _add_order_implementation(session, user_id, items, product_ids, None)
+
+def _add_order_implementation(session, user_id, items, product_ids, span=None):
+    """Implementation of add_order with optional tracing span"""
     try:
         logger.debug("Commencer : ajout de commande")
         products_query = session.query(Product).filter(Product.id.in_(product_ids)).all()
@@ -53,6 +73,10 @@ def add_order(user_id: int, items: list):
         session.flush()   
 
         order_id = new_order.id
+        
+        if span:
+            span.set_attribute("order.id", order_id)
+            span.set_attribute("order.total_amount", total_amount)
 
         new_order.payment_link = request_payment_link(new_order.id, total_amount, user_id)
         session.flush()  
@@ -75,10 +99,17 @@ def add_order(user_id: int, items: list):
         # Insert order into Redis
         update_stock_redis(order_items, '-')
         add_order_to_redis(order_id, user_id, total_amount, items, new_order.payment_link)
+        
+        if span:
+            span.set_attribute("order.success", True)
+            
         return order_id
 
     except Exception as e:
         session.rollback()
+        if span:
+            span.set_attribute("error", True)
+            span.set_attribute("error.message", str(e))
         raise e
     finally:
         session.close()
@@ -113,15 +144,37 @@ def request_payment_link(order_id, total_amount, user_id):
         "total_amount": total_amount
     }
 
+    # Import tracing if available
+    try:
+        from opentelemetry import trace
+        tracer = trace.get_tracer(__name__)
+        TRACING_ENABLED = True
+    except ImportError:
+        TRACING_ENABLED = False
+
     # Requête à POST /payments via l'API Gateway (KrakenD)
     try:
         payment_logger.debug(f"Demande de création de paiement pour la commande {order_id}")
         
-        response_from_payment_service = requests.post(
-            'http://api-gateway:8080/payments-api/payments',
-            json=payment_transaction,
-            headers={'Content-Type': 'application/json'}
-        )
+        if TRACING_ENABLED:
+            with tracer.start_as_current_span("payment-service-call") as span:
+                span.set_attribute("order.id", order_id)
+                span.set_attribute("payment.amount", total_amount)
+                span.set_attribute("user.id", user_id)
+                
+                response_from_payment_service = requests.post(
+                    'http://api-gateway:8080/payments-api/payments',
+                    json=payment_transaction,
+                    headers={'Content-Type': 'application/json'}
+                )
+                
+                span.set_attribute("http.status_code", response_from_payment_service.status_code)
+        else:
+            response_from_payment_service = requests.post(
+                'http://api-gateway:8080/payments-api/payments',
+                json=payment_transaction,
+                headers={'Content-Type': 'application/json'}
+            )
         
         if response_from_payment_service.ok:
             response_data = response_from_payment_service.json()
