@@ -13,8 +13,9 @@ def create_user(request):
     payload = request.get_json() or {}
     name = payload.get('name')
     email = payload.get('email')
+    user_type_id = payload.get('user_type_id', 1)  # Default to Client (1)
     try:
-        user_id = add_user(name, email)
+        user_id = add_user(name, email, user_type_id)
         return jsonify({'user_id': user_id}), 201
     except Exception as e:
         print(e)

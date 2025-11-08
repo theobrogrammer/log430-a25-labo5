@@ -2,15 +2,34 @@
 CREATE DATABASE IF NOT EXISTS labo05_db;
 USE labo05_db;
 
+-- User types table
+DROP TABLE IF EXISTS user_types;
+CREATE TABLE user_types (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(15) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+INSERT INTO user_types (name) VALUES
+('Client'), -- 1
+('Employee'), -- 2
+('Manager'); -- 3
+
 -- Users table
--- TODO: ajouter UserTypes
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    user_type_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_type_id) REFERENCES user_types(id) ON DELETE RESTRICT
 );
+INSERT INTO users (name, email, user_type_id) VALUES
+('Ada Lovelace', 'alovelace@example.com', 1),
+('Adele Goldberg', 'agoldberg@example.com', 1),
+('Alan Turing', 'aturing@example.com', 1),
+('Jane Doe', 'jdoe@magasinducoin.ca', 2),
+('Da Boss', 'dboss@magasinducoin.ca', 3);
 
 -- Products table
 DROP TABLE IF EXISTS products;
@@ -53,12 +72,6 @@ CREATE TABLE stocks (
     quantity INT NOT NULL DEFAULT 0,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT
 );
-
--- Mock data: users
-INSERT INTO users (name, email) VALUES
-('Ada Lovelace', 'alovelace@example.com'),
-('Adele Goldberg', 'agoldberg@example.com'),
-('Alan Turing', 'aturing@example.com');
 
 -- Mock data: products
 INSERT INTO products (name, sku, price) VALUES

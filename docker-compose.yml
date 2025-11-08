@@ -11,10 +11,8 @@ services:
     networks:
       - labo05-network
     depends_on:
-      mysql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+      - mysql
+      - redis
 
   locust:
      image: locustio/locust
@@ -63,6 +61,12 @@ services:
       timeout: 10s
       retries: 5
       start_period: 10s
+
+  # Zookeeper pour Kafka
+
+
+  # Kafka broker
+
 
   krakend:
     image: devopsfaith/krakend:2.4

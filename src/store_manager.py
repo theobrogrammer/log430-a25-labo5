@@ -11,6 +11,8 @@ from orders.controllers.order_controller import create_order, remove_order, get_
 from orders.controllers.user_controller import create_user, remove_user, get_user
 from stocks.controllers.product_controller import create_product, remove_product, get_product
 from stocks.controllers.stock_controller import get_stock, populate_redis_on_startup, set_stock, get_stock_overview
+# Import des modèles pour SQLAlchemy
+from orders.models.user_type import UserType
  
 app = Flask(__name__)
 

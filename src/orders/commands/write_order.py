@@ -111,11 +111,13 @@ def request_payment_link(order_id, total_amount, user_id):
         "order_id": order_id,
         "total_amount": total_amount
     }
-
+    # Note: Le code HTTP est stubbed, mais l'intention est claire
     response_from_payment_service = {}
 
     if True: # if response.ok
         print(f"ID paiement: {payment_id}")
+    # L'appel HTTP synchrone serait ici :
+    # response = requests.post("http://payments-api/process", json=payment_transaction)
 
     return f"http://api-gateway:8080/payments-api/payments/process/{payment_id}" 
 
